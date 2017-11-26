@@ -21,6 +21,10 @@
         </activity>
         <activity android:name="com.mishu.vaibhav.popmoviestwo.popularmoviestwo.DetailActivity"
             android:parentActivityName="com.mishu.vaibhav.popmoviestwo.popularmoviestwo.MainActivity"/>
+        <provider
+            android:name=".data.FavouritesProvider"
+            android:authorities="com.mishu.vaibhav.popmoviestwo"
+            android:exported="false"/>
     </application>
 
 </manifest>
