@@ -3,4 +3,5 @@
     <string name="sort_rating">Sort by Ratings</string>
     <string name="sort_popular">Sort by Popularity</string>
     <string name="list_preference">listing preference</string>
+    <string name="sort_favourites">Favourites</string>
 </resources>

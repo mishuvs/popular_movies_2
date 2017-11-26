@@ -71,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.RATING).apply();
                 task.execute(NetworkUtils.RATING);
                 break;
+
+            case R.id.sort_favourites:
+                //favourites selected
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
