@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity{
                 MovieDbJsonUtils.Movie movie;
                 for (int i=0;i<cursor.getCount();i++){
                     movie = new MovieDbJsonUtils.Movie(
+                            cursor.getInt(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_TMDB_ID)),
                             cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_TITLE)),
                             cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_URL_THUMBNAIL)),
                             cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_OVERVIEW)),

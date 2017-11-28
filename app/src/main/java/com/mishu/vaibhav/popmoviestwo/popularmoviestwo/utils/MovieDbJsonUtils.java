@@ -24,6 +24,7 @@ public class MovieDbJsonUtils {
         String movieOverview;
         double movieVoteAverage;
         String movieReleaseDate;
+        int tmdbId;
         ArrayList<Movie> movies = new ArrayList<Movie>();
         try{
             rootJson = new JSONObject(jsonResponse);
@@ -35,7 +36,8 @@ public class MovieDbJsonUtils {
                 movieTitle = movieJsonObj.getString("title");
                 movieUrlThumbnail = movieJsonObj.getString("poster_path");
                 movieReleaseDate = movieJsonObj.getString("release_date");
-                movies.add(i, new Movie(movieTitle,movieUrlThumbnail,movieOverview,movieVoteAverage,movieReleaseDate));
+                tmdbId = movieJsonObj.getInt("id");
+                movies.add(i, new Movie(tmdbId, movieTitle,movieUrlThumbnail,movieOverview,movieVoteAverage,movieReleaseDate));
             }
         }
         catch (JSONException e){
@@ -52,14 +54,16 @@ public class MovieDbJsonUtils {
         public String movieOverview;
         public double movieVoteAverage;
         public String movieReleaseDate;
+        public int tmdbId;
 
-        public Movie(String title, String urlThumbnail, String overview, double voteAverage, String releaseDate)
+        public Movie(int id, String title, String urlThumbnail, String overview, double voteAverage, String releaseDate)
         {
             movieTitle = title;
             movieUrlThumbnail = urlThumbnail;
             movieOverview = overview;
             movieVoteAverage = voteAverage;
             movieReleaseDate = releaseDate;
+            tmdbId = id;
         }
     }
 

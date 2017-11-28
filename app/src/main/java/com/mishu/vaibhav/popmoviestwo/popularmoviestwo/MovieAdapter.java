@@ -51,6 +51,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         holder.movieOverview = movie.movieOverview;
         holder.movieVoteAverage = movie.movieVoteAverage;
         holder.movieReleaseDate = movie.movieReleaseDate;
+        holder.tmdbId = movie.tmdbId;
 
         String url = NetworkUtils.BASE_IMAGE_URL + holder.movieUrlThumbnail;
         Log.i(LOG_TAG,url);
@@ -89,6 +90,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         String movieOverview;
         double movieVoteAverage;
         String movieReleaseDate;
+        int tmdbId;
 
         MovieHolder(final View itemView) {
             super(itemView);
@@ -104,6 +106,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
                     values.put(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE, movieReleaseDate);
                     values.put(MovieContract.FavouritesEntry.COLUMN_URL_THUMBNAIL, movieUrlThumbnail);
                     values.put(MovieContract.FavouritesEntry.COLUMN_RATING, movieVoteAverage);
+                    values.put(MovieContract.FavouritesEntry.COLUMN_TMDB_ID, tmdbId);
                     context.getContentResolver().insert(MovieContract.FavouritesEntry.CONTENT_URI, values);
                     favButton.setImageResource(R.drawable.ic_favorite_white_24dp);
                 }
