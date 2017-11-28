@@ -3,6 +3,7 @@ package com.mishu.vaibhav.popmoviestwo.popularmoviestwo;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -158,9 +159,11 @@ public class MainActivity extends AppCompatActivity{
                             cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE))
                     );
                     list.add(movie);
+                    cursor.moveToNext();
                 }
             }
             if (cursor != null) {
+                Log.i(LOG_TAG, DatabaseUtils.dumpCursorToString(cursor));
                 cursor.close();
             }
             return list;

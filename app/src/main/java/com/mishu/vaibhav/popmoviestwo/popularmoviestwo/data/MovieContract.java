@@ -16,7 +16,7 @@ public class MovieContract {
 
     public static class FavouritesEntry implements BaseColumns {
 
-        public static final String PATH = "weather";
+        public static final String PATH = "favourites";
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH)
                 .build();
@@ -32,11 +32,11 @@ public class MovieContract {
         public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                 COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
-                COLUMN_TMDB_ID + " INTEGER NOT NULL, " +
+//                COLUMN_TMDB_ID + " INTEGER NOT NULL, " +
                 COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 COLUMN_TITLE + " TEXT NOT NULL, " +
                 COLUMN_RATING + " REAL NOT NULL, " +
-                COLUMN_URL_THUMBNAIL + " TEXT NOT NULL, " +
+                COLUMN_URL_THUMBNAIL + " TEXT NOT NULL);";
 
                 /*
                  * To ensure this table can only contain one weather entry per date, we declare
@@ -44,7 +44,7 @@ public class MovieContract {
                  * SQLite that if we have a weather entry for a certain date and we attempt to
                  * insert another weather entry with that date, we replace the old weather entry.
                  */
-                " UNIQUE (" + COLUMN_TMDB_ID + ") ON CONFLICT REPLACE);";
+//                " UNIQUE (" + COLUMN_TMDB_ID + ") ON CONFLICT REPLACE);";
 
         }
     }

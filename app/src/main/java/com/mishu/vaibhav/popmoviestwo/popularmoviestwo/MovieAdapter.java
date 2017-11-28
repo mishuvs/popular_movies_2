@@ -1,5 +1,6 @@
 package com.mishu.vaibhav.popmoviestwo.popularmoviestwo;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.data.MovieContract;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.MovieDbJsonUtils;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.NetworkUtils;
 import com.squareup.picasso.Picasso;
@@ -81,16 +83,31 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
             implements View.OnClickListener {
 
 
-        private final ImageView poster;
+        private ImageView poster, favButton;
         String movieTitle;
         String movieUrlThumbnail;
         String movieOverview;
         double movieVoteAverage;
         String movieReleaseDate;
 
-        MovieHolder(View itemView) {
+        MovieHolder(final View itemView) {
             super(itemView);
             poster = itemView.findViewById(R.id.movie_image);
+            favButton = itemView.findViewById(R.id.fav_button);
+            favButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getAdapterPosition();
+                    ContentValues values = new ContentValues();
+                    values.put(MovieContract.FavouritesEntry.COLUMN_TITLE, movieTitle);
+                    values.put(MovieContract.FavouritesEntry.COLUMN_OVERVIEW, movieOverview);
+                    values.put(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE, movieReleaseDate);
+                    values.put(MovieContract.FavouritesEntry.COLUMN_URL_THUMBNAIL, movieUrlThumbnail);
+                    values.put(MovieContract.FavouritesEntry.COLUMN_RATING, movieVoteAverage);
+                    context.getContentResolver().insert(MovieContract.FavouritesEntry.CONTENT_URI, values);
+                    favButton.setImageResource(R.drawable.ic_favorite_white_24dp);
+                }
+            });
             itemView.setOnClickListener(this);
         }
 
