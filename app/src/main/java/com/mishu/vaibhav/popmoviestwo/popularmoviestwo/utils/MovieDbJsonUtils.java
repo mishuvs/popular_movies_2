@@ -53,7 +53,7 @@ public class MovieDbJsonUtils {
         public double movieVoteAverage;
         public String movieReleaseDate;
 
-        Movie(String title, String urlThumbnail, String overview, double voteAverage, String releaseDate)
+        public Movie(String title, String urlThumbnail, String overview, double voteAverage, String releaseDate)
         {
             movieTitle = title;
             movieUrlThumbnail = urlThumbnail;

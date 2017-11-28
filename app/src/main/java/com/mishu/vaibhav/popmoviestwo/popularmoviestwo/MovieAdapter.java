@@ -70,7 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
 
     void swap(List<MovieDbJsonUtils.Movie> newUrls)
     {
-        if(newUrls!=null && newUrls.size()>0){
+        if(newUrls!=null){
             Log.i(LOG_TAG,"list swapped");
             movies = newUrls;
             notifyDataSetChanged();

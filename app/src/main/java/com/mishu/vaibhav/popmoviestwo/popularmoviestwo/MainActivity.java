@@ -2,10 +2,13 @@ package com.mishu.vaibhav.popmoviestwo.popularmoviestwo;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -15,18 +18,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.data.MovieContract;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.MovieDbJsonUtils;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.NetworkUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     static List<MovieDbJsonUtils.Movie> movies;
     private MovieAdapter adapter;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final int FROM_SERVER_LOADER_ID = 1, FAVOURITE_LOADER_ID=2;
     private SharedPreferences sharedPref;
 
     @Override
@@ -60,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //clearing list:
+        adapter.swap(new ArrayList<MovieDbJsonUtils.Movie>());
+
         CallMovieServer task = new CallMovieServer(this);
         switch (item.getItemId()){
             case R.id.sort_popular:
@@ -74,6 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.sort_favourites:
                 //favourites selected
+                GetFavourites favTask = new GetFavourites(this);
+                favTask.execute();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -113,6 +124,51 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(List<MovieDbJsonUtils.Movie> movies) {
             super.onPostExecute(movies);
 
+            Log.i(LOG_TAG,"onpostexecute");
+
+            MainActivity activity = activityReference.get();
+            if (activity == null) return;
+
+            Log.i(LOG_TAG,"activity not null... swapping list");
+            activity.adapter.swap(movies);
+        }
+    }
+
+    static class GetFavourites extends AsyncTask<Void,Void,List<MovieDbJsonUtils.Movie>>{
+
+        private WeakReference<MainActivity> activityReference;
+
+        GetFavourites(MainActivity context){
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected List<MovieDbJsonUtils.Movie> doInBackground(Void... url) {
+            Cursor cursor = activityReference.get().getContentResolver().query(MovieContract.FavouritesEntry.CONTENT_URI,null,null,null,null);
+            List<MovieDbJsonUtils.Movie> list = new ArrayList<MovieDbJsonUtils.Movie>();
+            if(cursor!=null && cursor.getCount()>0){
+                cursor.moveToFirst();
+                MovieDbJsonUtils.Movie movie;
+                for (int i=0;i<cursor.getCount();i++){
+                    movie = new MovieDbJsonUtils.Movie(
+                            cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_TITLE)),
+                            cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_URL_THUMBNAIL)),
+                            cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_OVERVIEW)),
+                            cursor.getDouble(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_RATING)),
+                            cursor.getString(cursor.getColumnIndex(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE))
+                    );
+                    list.add(movie);
+                }
+            }
+            if (cursor != null) {
+                cursor.close();
+            }
+            return list;
+        }
+
+        @Override
+        protected void onPostExecute(List<MovieDbJsonUtils.Movie> movies) {
+            super.onPostExecute(movies);
             Log.i(LOG_TAG,"onpostexecute");
 
             MainActivity activity = activityReference.get();

@@ -24,6 +24,7 @@ public class MovieContract {
         public static final String TABLE_NAME = "favourites";
         public static final String COLUMN_TMDB_ID = "id";
         public static final String COLUMN_RELEASE_DATE = "date";
+        public static final String COLUMN_URL_THUMBNAIL = "posterUrl";
         public static final String COLUMN_OVERVIEW = "overview";
         public static final String COLUMN_TITLE = "title";
         public static final String COLUMN_RATING = "rating";
@@ -35,6 +36,7 @@ public class MovieContract {
                 COLUMN_OVERVIEW + " TEXT NOT NULL, " +
                 COLUMN_TITLE + " TEXT NOT NULL, " +
                 COLUMN_RATING + " REAL NOT NULL, " +
+                COLUMN_URL_THUMBNAIL + " TEXT NOT NULL, " +
 
                 /*
                  * To ensure this table can only contain one weather entry per date, we declare
