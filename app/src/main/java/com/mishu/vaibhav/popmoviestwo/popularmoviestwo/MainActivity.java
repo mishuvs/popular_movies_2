@@ -25,6 +25,7 @@ import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.NetworkUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.nio.channels.AsynchronousChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity{
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int FROM_SERVER_LOADER_ID = 1, FAVOURITE_LOADER_ID=2;
     private SharedPreferences sharedPref;
+    static ArrayList<Integer> favIds;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity{
 
             case R.id.sort_favourites:
                 //favourites selected
+                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.FAVOURITE).apply();
                 GetFavourites favTask = new GetFavourites(this);
                 favTask.execute();
                 break;
@@ -182,4 +185,5 @@ public class MainActivity extends AppCompatActivity{
             activity.adapter.swap(movies);
         }
     }
+
 }

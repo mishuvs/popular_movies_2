@@ -24,7 +24,7 @@ public class NetworkUtils {
     public static final String BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/";
     private static final String API_KEY_PARAM = "api_key";
     private static final String API_KEY = "8308357e1aad02f2ad09203c257a9a65";
-    public static final String POPULAR = "popular", RATING="top_rated";
+    public static final String POPULAR = "popular", RATING="top_rated", FAVOURITE="favourite";
 
     /**
      * Builds the URL used to talk to the movie server.
