@@ -84,7 +84,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
             implements View.OnClickListener {
 
 
-        private ImageView poster, favButton;
+        private ImageView poster;
         String movieTitle;
         String movieUrlThumbnail;
         String movieOverview;
@@ -95,22 +95,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         MovieHolder(final View itemView) {
             super(itemView);
             poster = itemView.findViewById(R.id.movie_image);
-            favButton = itemView.findViewById(R.id.fav_button);
-            favButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getAdapterPosition();
-                    ContentValues values = new ContentValues();
-                    values.put(MovieContract.FavouritesEntry.COLUMN_TITLE, movieTitle);
-                    values.put(MovieContract.FavouritesEntry.COLUMN_OVERVIEW, movieOverview);
-                    values.put(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE, movieReleaseDate);
-                    values.put(MovieContract.FavouritesEntry.COLUMN_URL_THUMBNAIL, movieUrlThumbnail);
-                    values.put(MovieContract.FavouritesEntry.COLUMN_RATING, movieVoteAverage);
-                    values.put(MovieContract.FavouritesEntry.COLUMN_TMDB_ID, tmdbId);
-                    context.getContentResolver().insert(MovieContract.FavouritesEntry.CONTENT_URI, values);
-                    favButton.setImageResource(R.drawable.ic_favorite_white_24dp);
-                }
-            });
             itemView.setOnClickListener(this);
         }
 
