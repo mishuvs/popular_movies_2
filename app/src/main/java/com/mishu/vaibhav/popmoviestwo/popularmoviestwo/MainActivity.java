@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity{
     private static final int FROM_SERVER_LOADER_ID = 1, FAVOURITE_LOADER_ID=2;
     private SharedPreferences sharedPref;
     static ArrayList<Integer> favIds;
+    private String listPreference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity{
 
         if(isOnline()){
             CallMovieServer task = new CallMovieServer(this);
-            String listPreference = sharedPref.getString(getString(R.string.list_preference),NetworkUtils.POPULAR);
+            listPreference = sharedPref.getString(getString(R.string.list_preference),NetworkUtils.POPULAR);
             task.execute(listPreference);//by popular or by ratings
         }
         else{
@@ -186,4 +187,12 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(listPreference==NetworkUtils.FAVOURITE){
+            GetFavourites task = new GetFavourites(this);
+            task.execute();
+        }
+    }
 }
