@@ -101,6 +101,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieHolder>
         @Override
         public void onClick(View v) {
             Intent i = new Intent(context,DetailActivity.class);
+            i.putExtra("tmdbID",tmdbId);
             i.putExtra("title",movieTitle);
             i.putExtra("url_thumbnail",movieUrlThumbnail);
             i.putExtra("overview",movieOverview);
