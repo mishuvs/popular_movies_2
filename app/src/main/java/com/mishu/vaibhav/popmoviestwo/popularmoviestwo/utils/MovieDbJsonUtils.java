@@ -48,6 +48,25 @@ public class MovieDbJsonUtils {
         return movies;
     }
 
+    public static ArrayList<String> jsonStringToTrailers(String jsonResponse){
+        JSONObject rootJson, movieJsonObj;
+        JSONArray jsonArray;
+        ArrayList<String> trailers = new ArrayList<String>();
+        try{
+            rootJson = new JSONObject(jsonResponse);
+            jsonArray = rootJson.getJSONArray("results");
+            for(int i=0; i < jsonArray.length(); i++) {
+                trailers.add(jsonArray.getJSONObject(i).getString("key"));
+            }
+            return trailers;
+        }
+        catch (JSONException e){
+            Log.e(LOG_TAG, "Problem converting to JSON array: " + e);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static class Movie{
         public String movieTitle;
         public String movieUrlThumbnail;

@@ -49,6 +49,44 @@ public class NetworkUtils {
         }
     }
 
+    public static URL buildMovieTrailersUrl(int id) {
+        Uri builtUri = Uri.parse(BASE_URL);
+        Uri finalUri = builtUri.buildUpon()
+                .appendPath("" + id)
+                .appendPath("videos")
+                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .build();
+
+        Log.i(TAG,"This is the built uri: " + finalUri.toString());
+
+        try {
+            return new URL(finalUri.toString());
+        } catch (MalformedURLException e) {
+            Log.i(TAG,"error buildUrl");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static URL buildMovieReviewsUrl(int id) {
+        Uri builtUri = Uri.parse(BASE_URL);
+        Uri finalUri = builtUri.buildUpon()
+                .appendPath("" + id)
+                .appendPath("reviews")
+                .appendQueryParameter(API_KEY_PARAM, API_KEY)
+                .build();
+
+        Log.i(TAG,"This is the built uri: " + finalUri.toString());
+
+        try {
+            return new URL(finalUri.toString());
+        } catch (MalformedURLException e) {
+            Log.i(TAG,"error buildUrl");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * This method returns the entire result from the HTTP response.
      *

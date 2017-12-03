@@ -17,6 +17,7 @@ import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.MovieDbJsonUtils;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,9 @@ public class DetailActivity extends AppCompatActivity {
         movieOverview = i.getStringExtra("overview");
         movieVoteAverage = i.getDoubleExtra("vote_average",0);
         movieReleaseDate = i.getStringExtra("release_date");
+
+        CallTrailerServer task = new CallTrailerServer(this);
+        task.execute(id);
 
         String url = NetworkUtils.BASE_IMAGE_URL + movieUrlThumbnail;
         Picasso.with(this)
@@ -121,6 +125,37 @@ public class DetailActivity extends AppCompatActivity {
             }
         }
     }
+
+    static class CallTrailerServer extends AsyncTask<Integer,Void,ArrayList<String>>{
+
+        private WeakReference<DetailActivity> activityReference;
+
+        CallTrailerServer(DetailActivity context){
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(Integer... id) {
+            Log.i(LOG_TAG,"doinback");
+            try {
+                return MovieDbJsonUtils.jsonStringToTrailers(
+                        NetworkUtils.getResponseFromHttpUrl(
+                                NetworkUtils.buildMovieTrailersUrl(id[0])
+                        )
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> trailers) {
+            super.onPostExecute(trailers);
+            Log.i("haha","trailers: " + trailers.toString());
+        }
+    }
+
 
     @Override
     protected void onResume() {
