@@ -7,9 +7,13 @@ import android.databinding.DataBindingUtil;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.data.MovieContract;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.databinding.ActivityDetailBinding;
@@ -31,13 +35,17 @@ public class DetailActivity extends AppCompatActivity {
     private double movieVoteAverage;
 
     private static List<Integer> favIds;
-    private ActivityDetailBinding binding;
+    private static ActivityDetailBinding binding;
     private static boolean isFavourite;
+
+    private static DetailAdapter adapter;
+
+    private static ArrayAdapter<String> trailerAdapter, reviewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final ActivityDetailBinding binding = DataBindingUtil.setContentView(this,R.layout.activity_detail);
+        binding = DataBindingUtil.setContentView(this,R.layout.activity_detail);
 
         Intent i = getIntent();
         id = i.getIntExtra("tmdbID",0);
@@ -49,6 +57,13 @@ public class DetailActivity extends AppCompatActivity {
 
         CallTrailerServer task = new CallTrailerServer(this);
         task.execute(id);
+        CallReviewServer reviewTask = new CallReviewServer(this);
+        reviewTask.execute(id);
+
+        adapter = new DetailAdapter(this);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        binding.detailRecyclerView.setLayoutManager(layoutManager);
+        binding.detailRecyclerView.setAdapter(adapter);
 
         String url = NetworkUtils.BASE_IMAGE_URL + movieUrlThumbnail;
         Picasso.with(this)
@@ -152,10 +167,39 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<String> trailers) {
             super.onPostExecute(trailers);
-            Log.i("haha","trailers: " + trailers.toString());
+            adapter.swapTrailers(trailers);
         }
     }
 
+    static class CallReviewServer extends AsyncTask<Integer,Void,ArrayList<String>>{
+
+        private WeakReference<DetailActivity> activityReference;
+
+        CallReviewServer(DetailActivity context){
+            activityReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected ArrayList<String> doInBackground(Integer... id) {
+            Log.i(LOG_TAG,"doinback");
+            try {
+                return MovieDbJsonUtils.jsonStringToReviews(
+                        NetworkUtils.getResponseFromHttpUrl(
+                                NetworkUtils.buildMovieReviewsUrl(id[0])
+                        )
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> reviews) {
+            super.onPostExecute(reviews);
+            adapter.swapReviews(reviews);
+        }
+    }
 
     @Override
     protected void onResume() {

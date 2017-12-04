@@ -49,7 +49,7 @@ public class MovieDbJsonUtils {
     }
 
     public static ArrayList<String> jsonStringToTrailers(String jsonResponse){
-        JSONObject rootJson, movieJsonObj;
+        JSONObject rootJson;
         JSONArray jsonArray;
         ArrayList<String> trailers = new ArrayList<String>();
         try{
@@ -59,6 +59,25 @@ public class MovieDbJsonUtils {
                 trailers.add(jsonArray.getJSONObject(i).getString("key"));
             }
             return trailers;
+        }
+        catch (JSONException e){
+            Log.e(LOG_TAG, "Problem converting to JSON array: " + e);
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static ArrayList<String> jsonStringToReviews(String jsonResponse){
+        JSONObject rootJson;
+        JSONArray jsonArray;
+        ArrayList<String> reviews = new ArrayList<String>();
+        try{
+            rootJson = new JSONObject(jsonResponse);
+            jsonArray = rootJson.getJSONArray("results");
+            for(int i=0; i < jsonArray.length(); i++) {
+                reviews.add(jsonArray.getJSONObject(i).getString("content"));
+            }
+            return reviews;
         }
         catch (JSONException e){
             Log.e(LOG_TAG, "Problem converting to JSON array: " + e);
