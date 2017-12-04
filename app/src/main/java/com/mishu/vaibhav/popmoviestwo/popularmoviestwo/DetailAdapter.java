@@ -21,17 +21,18 @@ import java.util.List;
 
 public class DetailAdapter extends RecyclerView.Adapter{
 
-    ArrayList<String> movieReviews, movieTrailers;
+    private ArrayList<DetailActivity.Review> movieReviews;
+    private ArrayList<DetailActivity.Trailer> movieTrailers;
 
     private final int VIEW_TYPE_TRAILER = 0;
     private final int VIEW_TYPE_REVIEW = 1;
 
-    Context mContext;
+    private Context mContext;
 
-    public DetailAdapter(Context context) {
+    DetailAdapter(Context context) {
         super();
-        movieReviews = new ArrayList<String>();
-        movieTrailers = new ArrayList<String>();
+        movieReviews = new ArrayList<DetailActivity.Review>();
+        movieTrailers = new ArrayList<DetailActivity.Trailer>();
         mContext = context;
     }
 
@@ -55,13 +56,13 @@ public class DetailAdapter extends RecyclerView.Adapter{
 
             case VIEW_TYPE_REVIEW:
                 ReviewHolder reviewHolder = (ReviewHolder) holder;
-                reviewHolder.author.setText("author");
-                reviewHolder.reviewText.setText(movieReviews.get(position));
+                reviewHolder.author.setText(movieReviews.get(position).reviewAuthor);
+                reviewHolder.reviewText.setText(movieReviews.get(position).reviewText);
                 break;
 
             case VIEW_TYPE_TRAILER:
-                ((TrailerHolder) holder).trailerKey = movieTrailers.get(position - movieReviews.size());
-                ((TrailerHolder) holder).trailerTitle.setText(String.format("Trailer: %d", position - movieReviews.size()));
+                ((TrailerHolder) holder).trailerKey = movieTrailers.get(position - movieReviews.size()).trailerLink;
+                ((TrailerHolder) holder).trailerTitle.setText(movieTrailers.get(position - movieReviews.size()).trailerTitle);
                 break;
 
         }
@@ -79,7 +80,7 @@ public class DetailAdapter extends RecyclerView.Adapter{
         else return VIEW_TYPE_TRAILER;
     }
 
-    void swapReviews(ArrayList<String> reviews)
+    void swapReviews(ArrayList<DetailActivity.Review> reviews)
     {
         if(reviews!=null){
             movieReviews = reviews;
@@ -87,7 +88,7 @@ public class DetailAdapter extends RecyclerView.Adapter{
         }
     }
 
-    void swapTrailers(ArrayList<String> trailers)
+    void swapTrailers(ArrayList<DetailActivity.Trailer> trailers)
     {
         if(trailers!=null){
             movieTrailers = trailers;

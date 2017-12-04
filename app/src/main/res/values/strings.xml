@@ -4,4 +4,7 @@
     <string name="sort_popular">Sort by Popularity</string>
     <string name="list_preference">listing preference</string>
     <string name="sort_favourites">Favourites</string>
+    <string name="reviews_and_trailers">--- Reviews and Trailers ---</string>
+    <string name="add_favourite">Add as Favourite</string>
+    <string name="remove_favourite">Remove from Favourites</string>
 </resources>

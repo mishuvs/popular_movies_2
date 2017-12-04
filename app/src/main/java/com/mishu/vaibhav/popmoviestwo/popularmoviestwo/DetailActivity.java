@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -87,11 +88,11 @@ public class DetailActivity extends AppCompatActivity {
                     values.put(MovieContract.FavouritesEntry.COLUMN_OVERVIEW, movieOverview);
                     values.put(MovieContract.FavouritesEntry.COLUMN_RELEASE_DATE, movieReleaseDate);
                     getContentResolver().insert(MovieContract.FavouritesEntry.CONTENT_URI, values);
-                    binding.favButton.setImageResource(R.drawable.ic_favorite_white_24dp);
+                    binding.favButton.setText(R.string.remove_favourite);
                 }
                 else{
                     getContentResolver().delete(MovieContract.FavouritesEntry.CONTENT_URI,"id="+id,null);
-                    binding.favButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    binding.favButton.setText(R.string.add_favourite);
                 }
             }
         });
@@ -132,16 +133,16 @@ public class DetailActivity extends AppCompatActivity {
             super.onPostExecute(movies);
             if(favIds.contains(id)){
                 isFavourite = true;
-                ((ImageButton)activityReference.get().findViewById(R.id.fav_button)).setImageResource(R.drawable.ic_favorite_white_24dp);
+                ((Button)activityReference.get().findViewById(R.id.fav_button)).setText(R.string.remove_favourite);
             }
             else{
                 isFavourite = false;
-                ((ImageButton)activityReference.get().findViewById(R.id.fav_button)).setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                ((Button)activityReference.get().findViewById(R.id.fav_button)).setText(R.string.add_favourite);
             }
         }
     }
 
-    static class CallTrailerServer extends AsyncTask<Integer,Void,ArrayList<String>>{
+    static class CallTrailerServer extends AsyncTask<Integer,Void,ArrayList<Trailer>>{
 
         private WeakReference<DetailActivity> activityReference;
 
@@ -150,7 +151,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(Integer... id) {
+        protected ArrayList<Trailer> doInBackground(Integer... id) {
             Log.i(LOG_TAG,"doinback");
             try {
                 return MovieDbJsonUtils.jsonStringToTrailers(
@@ -165,13 +166,13 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> trailers) {
+        protected void onPostExecute(ArrayList<Trailer> trailers) {
             super.onPostExecute(trailers);
             adapter.swapTrailers(trailers);
         }
     }
 
-    static class CallReviewServer extends AsyncTask<Integer,Void,ArrayList<String>>{
+    static class CallReviewServer extends AsyncTask<Integer,Void,ArrayList<Review>>{
 
         private WeakReference<DetailActivity> activityReference;
 
@@ -180,7 +181,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<String> doInBackground(Integer... id) {
+        protected ArrayList<Review> doInBackground(Integer... id) {
             Log.i(LOG_TAG,"doinback");
             try {
                 return MovieDbJsonUtils.jsonStringToReviews(
@@ -195,7 +196,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> reviews) {
+        protected void onPostExecute(ArrayList<Review> reviews) {
             super.onPostExecute(reviews);
             adapter.swapReviews(reviews);
         }
@@ -207,5 +208,25 @@ public class DetailActivity extends AppCompatActivity {
         favIds = new ArrayList<Integer>();
         FavToArrayList task = new FavToArrayList(this);
         task.execute();
+    }
+
+    public static class Review{
+        String reviewText, reviewAuthor;
+
+        public Review(String author, String text)
+        {
+            reviewText = text;
+            reviewAuthor = author;
+        }
+    }
+
+    public static class Trailer{
+        String trailerLink, trailerTitle;
+
+        public Trailer(String link, String title)
+        {
+            trailerLink = link;
+            trailerTitle = title;
+        }
     }
 }

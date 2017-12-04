@@ -63,11 +63,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"/>
-            <ImageButton
+            <Button
                 android:id="@+id/fav_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_favorite_border_black_24dp"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </LinearLayout>
 
@@ -78,6 +77,14 @@
         android:textSize="18sp"
         android:textStyle="italic"
         android:padding="8dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:text="@string/reviews_and_trailers"
+        android:gravity="center"
+        android:textStyle="bold"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/detail_recycler_view"

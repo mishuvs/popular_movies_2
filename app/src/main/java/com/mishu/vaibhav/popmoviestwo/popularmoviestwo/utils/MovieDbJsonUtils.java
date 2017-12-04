@@ -2,6 +2,8 @@ package com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils;
 
 import android.util.Log;
 
+import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.DetailActivity;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,15 +50,15 @@ public class MovieDbJsonUtils {
         return movies;
     }
 
-    public static ArrayList<String> jsonStringToTrailers(String jsonResponse){
+    public static ArrayList<DetailActivity.Trailer> jsonStringToTrailers(String jsonResponse){
         JSONObject rootJson;
         JSONArray jsonArray;
-        ArrayList<String> trailers = new ArrayList<String>();
+        ArrayList<DetailActivity.Trailer> trailers = new ArrayList<DetailActivity.Trailer>();
         try{
             rootJson = new JSONObject(jsonResponse);
             jsonArray = rootJson.getJSONArray("results");
             for(int i=0; i < jsonArray.length(); i++) {
-                trailers.add(jsonArray.getJSONObject(i).getString("key"));
+                trailers.add(new DetailActivity.Trailer(jsonArray.getJSONObject(i).getString("key"),jsonArray.getJSONObject(i).getString("name")));
             }
             return trailers;
         }
@@ -67,15 +69,15 @@ public class MovieDbJsonUtils {
         return null;
     }
 
-    public static ArrayList<String> jsonStringToReviews(String jsonResponse){
+    public static ArrayList<DetailActivity.Review> jsonStringToReviews(String jsonResponse){
         JSONObject rootJson;
         JSONArray jsonArray;
-        ArrayList<String> reviews = new ArrayList<String>();
+        ArrayList<DetailActivity.Review> reviews = new ArrayList<DetailActivity.Review>();
         try{
             rootJson = new JSONObject(jsonResponse);
             jsonArray = rootJson.getJSONArray("results");
             for(int i=0; i < jsonArray.length(); i++) {
-                reviews.add(jsonArray.getJSONObject(i).getString("content"));
+                reviews.add(new DetailActivity.Review(jsonArray.getJSONObject(i).getString("author"), jsonArray.getJSONObject(i).getString("content")));
             }
             return reviews;
         }

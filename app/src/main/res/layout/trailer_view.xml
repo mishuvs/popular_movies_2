@@ -3,7 +3,7 @@
     android:layout_width="match_parent" android:layout_height="wrap_content"
     android:id="@+id/trailer_title"
     android:textStyle="bold"
-    android:textSize="22sp"
+    android:textSize="18sp"
     android:drawableLeft="@drawable/if_youtube_317714"
     android:drawableStart="@drawable/if_youtube_317714"
     android:drawablePadding="8dp"
