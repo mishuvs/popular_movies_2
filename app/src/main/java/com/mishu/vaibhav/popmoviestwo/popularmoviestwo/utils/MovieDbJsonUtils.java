@@ -3,11 +3,13 @@ package com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils;
 import android.util.Log;
 
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.DetailActivity;
+import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.MainActivity;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +20,7 @@ public class MovieDbJsonUtils {
 
     private static final String LOG_TAG = MovieDbJsonUtils.class.getSimpleName();
 
-    public static ArrayList<Movie> jsonStringToMovies(String jsonResponse){
+    public static MainActivity.MovieList<Movie> jsonStringToMovies(String jsonResponse){
         JSONObject rootJson, movieJsonObj;
         JSONArray jsonArray;
         String movieTitle;
@@ -27,7 +29,7 @@ public class MovieDbJsonUtils {
         double movieVoteAverage;
         String movieReleaseDate;
         int tmdbId;
-        ArrayList<Movie> movies = new ArrayList<Movie>();
+        MainActivity.MovieList<Movie> movies = new MainActivity.MovieList<>();
         try{
             rootJson = new JSONObject(jsonResponse);
             jsonArray = rootJson.getJSONArray("results");
@@ -88,7 +90,7 @@ public class MovieDbJsonUtils {
         return null;
     }
 
-    public static class Movie{
+    public static class Movie implements Serializable{
         public String movieTitle;
         public String movieUrlThumbnail;
         public String movieOverview;

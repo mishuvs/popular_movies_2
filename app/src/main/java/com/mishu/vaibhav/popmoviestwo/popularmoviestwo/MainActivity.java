@@ -24,20 +24,24 @@ import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.MovieDbJsonUtils;
 import com.mishu.vaibhav.popmoviestwo.popularmoviestwo.utils.NetworkUtils;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.nio.channels.AsynchronousChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity{
 
-    static List<MovieDbJsonUtils.Movie> movies;
+    static MovieList<MovieDbJsonUtils.Movie> movies;
     private MovieAdapter adapter;
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final int FROM_SERVER_LOADER_ID = 1, FAVOURITE_LOADER_ID=2;
     private SharedPreferences sharedPref;
     static ArrayList<Integer> favIds;
     private String listPreference;
+    private MovieList<MovieDbJsonUtils.Movie> fetchedMovies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        listPreference = sharedPref.getString(getString(R.string.list_preference),NetworkUtils.POPULAR);
 
         adapter = new MovieAdapter(this,null);
         GridLayoutManager movieLayoutManager = new GridLayoutManager(this,2,GridLayoutManager.VERTICAL,false);
@@ -52,14 +57,34 @@ public class MainActivity extends AppCompatActivity{
         movieRecyclerView.setAdapter(adapter);
         movieRecyclerView.setLayoutManager(movieLayoutManager);
 
-        if(isOnline()){
-            CallMovieServer task = new CallMovieServer(this);
-            listPreference = sharedPref.getString(getString(R.string.list_preference),NetworkUtils.POPULAR);
-            task.execute(listPreference);//by popular or by ratings
+        if(fetchedMovies==null){
+            if(isOnline()){
+                if(Objects.equals(listPreference, NetworkUtils.FAVOURITE)){
+                    GetFavourites task = new GetFavourites(this);
+                    try {
+                        fetchedMovies = task.execute().get();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+                else{
+                    CallMovieServer task = new CallMovieServer(this);
+                    try {
+                        fetchedMovies = task.execute(listPreference).get();//by popular or by ratings
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            else{
+                Toast.makeText(this,"No connection to internet",Toast.LENGTH_LONG).show();
+            }
         }
-        else{
-            Toast.makeText(this,"No connection to internet",Toast.LENGTH_LONG).show();
-        }
+        adapter.swap(fetchedMovies);
     }
 
     @Override
@@ -76,18 +101,21 @@ public class MainActivity extends AppCompatActivity{
         CallMovieServer task = new CallMovieServer(this);
         switch (item.getItemId()){
             case R.id.sort_popular:
-                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.POPULAR).apply();
+                listPreference = NetworkUtils.POPULAR;
+//              sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.POPULAR).apply();
                 task.execute(NetworkUtils.POPULAR);
                 break;
 
             case R.id.sort_rating:
-                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.RATING).apply();
+                listPreference = NetworkUtils.RATING;
+//                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.RATING).apply();
                 task.execute(NetworkUtils.RATING);
                 break;
 
             case R.id.sort_favourites:
                 //favourites selected
-                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.FAVOURITE).apply();
+                listPreference = NetworkUtils.FAVOURITE;
+//                sharedPref.edit().putString(getString(R.string.list_preference),NetworkUtils.FAVOURITE).apply();
                 GetFavourites favTask = new GetFavourites(this);
                 favTask.execute();
                 break;
@@ -102,7 +130,7 @@ public class MainActivity extends AppCompatActivity{
         return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
-    static class CallMovieServer extends AsyncTask<String,Void,List<MovieDbJsonUtils.Movie>>{
+    static class CallMovieServer extends AsyncTask<String,Void,MovieList<MovieDbJsonUtils.Movie>>{
 
         private WeakReference<MainActivity> activityReference;
 
@@ -111,7 +139,7 @@ public class MainActivity extends AppCompatActivity{
         }
 
         @Override
-        protected List<MovieDbJsonUtils.Movie> doInBackground(String... type) {
+        protected MovieList<MovieDbJsonUtils.Movie> doInBackground(String... type) {
             Log.i(LOG_TAG,"doinback");
             try {
                 movies = MovieDbJsonUtils.jsonStringToMovies(
@@ -126,7 +154,7 @@ public class MainActivity extends AppCompatActivity{
         }
 
         @Override
-        protected void onPostExecute(List<MovieDbJsonUtils.Movie> movies) {
+        protected void onPostExecute(MovieList<MovieDbJsonUtils.Movie> movies) {
             super.onPostExecute(movies);
 
             Log.i(LOG_TAG,"onpostexecute");
@@ -139,7 +167,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    static class GetFavourites extends AsyncTask<Void,Void,List<MovieDbJsonUtils.Movie>>{
+    static class GetFavourites extends AsyncTask<Void,Void,MovieList<MovieDbJsonUtils.Movie>>{
 
         private WeakReference<MainActivity> activityReference;
 
@@ -148,9 +176,9 @@ public class MainActivity extends AppCompatActivity{
         }
 
         @Override
-        protected List<MovieDbJsonUtils.Movie> doInBackground(Void... url) {
+        protected MovieList<MovieDbJsonUtils.Movie> doInBackground(Void... url) {
             Cursor cursor = activityReference.get().getContentResolver().query(MovieContract.FavouritesEntry.CONTENT_URI,null,null,null,null);
-            List<MovieDbJsonUtils.Movie> list = new ArrayList<MovieDbJsonUtils.Movie>();
+            MovieList<MovieDbJsonUtils.Movie> list = new MovieList<MovieDbJsonUtils.Movie>();
             if(cursor!=null && cursor.getCount()>0){
                 cursor.moveToFirst();
                 MovieDbJsonUtils.Movie movie;
@@ -173,26 +201,21 @@ public class MainActivity extends AppCompatActivity{
             }
             return list;
         }
-
-        @Override
-        protected void onPostExecute(List<MovieDbJsonUtils.Movie> movies) {
-            super.onPostExecute(movies);
-            Log.i(LOG_TAG,"onpostexecute");
-
-            MainActivity activity = activityReference.get();
-            if (activity == null) return;
-
-            Log.i(LOG_TAG,"activity not null... swapping list");
-            activity.adapter.swap(movies);
-        }
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if(listPreference==NetworkUtils.FAVOURITE){
-            GetFavourites task = new GetFavourites(this);
-            task.execute();
-        }
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        sharedPref.edit().putString(getString(R.string.list_preference),listPreference).apply();
+        outState.putSerializable("movies",fetchedMovies);
     }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        fetchedMovies = (MovieList<MovieDbJsonUtils.Movie>) savedInstanceState.getSerializable("movies");
+
+    }
+
+    public static class MovieList<E> extends ArrayList<MovieDbJsonUtils.Movie> implements Serializable{}
 }
